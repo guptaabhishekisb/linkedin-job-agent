@@ -20,7 +20,7 @@ An automated agent built with **Claude Code** that scrapes your LinkedIn feed fo
            ▼
 ┌──────────────────────┐
 │  Stage 2: Extractor  │
-│  (Claude API)        │
+│  (Claude Code CLI)   │
 │                      │
 │  - Filters for PM    │
 │    roles only        │
@@ -62,13 +62,20 @@ All fields except Sr. No. are optional — left blank if not available.
 
 ## Prerequisites
 
-### 1. Install Dependencies
+### 1. Install Claude Code CLI
+This project uses the Claude Code CLI (`claude -p`) to analyze posts:
+```bash
+npm install -g @anthropic-ai/claude-code
+claude   # follow the login prompts
+```
+
+### 2. Install Python Dependencies
 ```bash
 pip install -r requirements.txt
 playwright install chromium
 ```
 
-### 2. Google Sheets API Setup
+### 3. Google Sheets API Setup
 You need a Google Cloud service account to write to your sheet:
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
@@ -92,16 +99,16 @@ https://docs.google.com/spreadsheets/d/e/2PACX-1vQD5xWhWAQ0AQnsENumla96ia68b8Jjf
 > `https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit`
 > Copy that SPREADSHEET_ID and set it in your `.env` file (see below).
 
-### 3. LinkedIn Browser Profile
+### 4. LinkedIn Browser Profile
 ```bash
 python scripts/setup_browser_profile.py
 ```
 Log in manually, then close the browser. Your password is never stored.
 
-### 4. Environment Variables
+### 5. Environment Variables
 Create a `.env` file in the project root:
 ```bash
-# Required
+# Used by the Claude Code CLI for auth (not read directly by Python scripts)
 ANTHROPIC_API_KEY=your-anthropic-api-key
 
 # Google Sheets
@@ -174,8 +181,11 @@ linkedin-job-agent/
 │   └── run_daily.py                   # Orchestrator
 ├── data/
 │   ├── browser_profile/               # Browser cookies (gitignored)
-│   └── scraped_posts/                 # Raw JSON data
-└── logs/
+│   ├── scraped_posts/                 # Raw JSON data (feed_YYYY-MM-DD.json)
+│   └── last_run.json                  # Run log read by send_notification.py
+├── output/
+│   └── fallback_jobs_YYYY-MM-DD.json  # Local backup if Google Sheets write fails
+└── logs/                              # Created manually for cron output
 ```
 
 ---
@@ -183,7 +193,7 @@ linkedin-job-agent/
 ## Customization
 
 ### Adjust PM Keywords
-Edit the `PM_KEYWORDS` list in `scripts/extract_jobs.py` to broaden or narrow the filter.
+Edit the `ANALYSIS_PROMPT` and `batch_prompt` strings in `scripts/extract_jobs.py` to broaden or narrow the PM role filter. The filtering is done via the prompt sent to Claude Code CLI — there is no separate keyword list.
 
 ### Change Scroll Depth
 In `scripts/scrape_feed.py`:

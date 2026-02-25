@@ -1,7 +1,6 @@
 """
 Stage 2: Extract Product Management job postings from scraped LinkedIn feed.
-Uses Claude Code CLI (claude -p) for analysis — runs on your Pro subscription.
-No API key needed! Just have Claude Code installed and logged in.
+Uses Claude Code CLI (claude -p) for analysis — requires Claude Code installed and logged in.
 """
 
 from __future__ import annotations

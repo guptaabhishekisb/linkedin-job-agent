@@ -1,7 +1,7 @@
 # CLAUDE.md — Instructions for Claude Code Agent
 
 ## Project Purpose
-This agent scrapes the user's LinkedIn feed, identifies **Product Management** job postings using Claude API, publishes structured results to a Google Sheet, and sends an email summary.
+This agent scrapes the user's LinkedIn feed, identifies **Product Management** job postings using the **Claude Code CLI** (`claude -p`), publishes structured results to a Google Sheet, and sends an email summary.
 
 ## How to Run
 
@@ -19,16 +19,18 @@ python scripts/send_notification.py     # Send email summary of last run
 
 ## Key Files
 - `scripts/scrape_feed.py` — Playwright scraper, scrolls feed, saves posts as JSON
-- `scripts/extract_jobs.py` — Claude API analysis, PM filtering, Google Sheets publish
+- `scripts/extract_jobs.py` — Claude Code CLI analysis, PM filtering, Google Sheets publish
 - `scripts/send_notification.py` — Email notification with run summary
 - `scripts/run_daily.py` — Orchestrator running all stages
 - `scripts/setup_browser_profile.py` — One-time LinkedIn login
-- `data/scraped_posts/` — Raw JSON files named by date
+- `data/scraped_posts/` — Raw JSON files named by date (`feed_YYYY-MM-DD.json`)
+- `data/last_run.json` — Run log written by `extract_jobs.py`, read by `send_notification.py`
+- `output/fallback_jobs_YYYY-MM-DD.json` — Local fallback if Google Sheets write fails
 - `credentials/google_service_account.json` — Google API credentials (gitignored)
-- `.env` — API keys and config (gitignored)
+- `.env` — Config and credentials (gitignored)
 
 ## Environment Variables (in .env)
-- `ANTHROPIC_API_KEY` — Required for Claude API
+- `ANTHROPIC_API_KEY` — Used by the `claude` CLI for authentication (not read directly by Python scripts)
 - `GOOGLE_SHEET_ID` — Spreadsheet ID from the Google Sheets URL
 - `GOOGLE_CREDENTIALS_PATH` — Path to service account JSON
 - `EMAIL_ENABLED` — true/false
@@ -72,10 +74,13 @@ EXCLUDE posts about:
 ## Error Handling
 - If browser session expired → print message, ask user to re-run setup_browser_profile.py
 - If no PM jobs found → log the run, don't modify the sheet, still send email ("0 jobs found")
-- If Claude API fails → save raw data for re-processing, continue with remaining posts
-- If Google Sheets API fails → save results to local `output/fallback_jobs.json` as backup
+- If Claude Code CLI fails → fall back to individual post analysis; skip posts that time out
+- If Google Sheets API fails → save results to local `output/fallback_jobs_{date}.json` as backup
 - If email fails → log the error, don't crash the pipeline
 
 ## Dependencies
-- Python 3.10+
-- playwright, gspread, google-auth, anthropic, python-dotenv
+- Python 3.9+
+- Claude Code CLI (`npm install -g @anthropic-ai/claude-code` + `claude` login)
+- pip packages: `playwright`, `gspread`, `google-auth`, `python-dotenv`
+
+> Note: `anthropic` SDK is **not** used directly. Analysis is done via the `claude -p` CLI subprocess.
