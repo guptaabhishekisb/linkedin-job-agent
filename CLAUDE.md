@@ -79,7 +79,7 @@ EXCLUDE posts about:
 - If email fails → log the error, don't crash the pipeline
 
 ## Dependencies
-- Python 3.9+
+- Python 3.14+
 - Claude Code CLI (`npm install -g @anthropic-ai/claude-code` + `claude` login)
 - pip packages: `playwright`, `gspread`, `google-auth`, `python-dotenv`
 
