@@ -99,6 +99,9 @@ def call_claude_code(prompt: str, timeout: int = 60) -> str | None:
         # Small delay to avoid rate limiting
         time.sleep(3)
 
+        # Strip CLAUDECODE* env vars so nested claude invocations aren't blocked
+        env = {k: v for k, v in os.environ.items() if not k.startswith('CLAUDECODE')}
+
         result = subprocess.run(
             ['claude', '-p', '--output-format', 'text', '--max-turns', '1'],
             input=prompt,
@@ -106,6 +109,7 @@ def call_claude_code(prompt: str, timeout: int = 60) -> str | None:
             text=True,
             timeout=timeout,
             cwd='/tmp',
+            env=env,
         )
 
         text = result.stdout.strip()
