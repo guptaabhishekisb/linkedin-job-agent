@@ -15,7 +15,7 @@ from playwright.sync_api import sync_playwright
 PROFILE_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'browser_profile')
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'scraped_posts')
 
-SCROLL_COUNT = 25
+SCROLL_COUNT = 50
 SCROLL_DELAY_MIN = 3
 SCROLL_DELAY_MAX = 7
 SCROLL_PIXELS = 800

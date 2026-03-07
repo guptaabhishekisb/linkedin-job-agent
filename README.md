@@ -198,7 +198,7 @@ Edit the `ANALYSIS_PROMPT` and `batch_prompt` strings in `scripts/extract_jobs.p
 ### Change Scroll Depth
 In `scripts/scrape_feed.py`:
 ```python
-SCROLL_COUNT = 25  # Increase for more posts
+SCROLL_COUNT = 50  # Increase for more posts
 ```
 
 ### Re-login (Session Expired)
