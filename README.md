@@ -153,11 +153,11 @@ Then ask:
 - "Change the PM keyword filters"
 - "Increase the scroll count to capture more posts"
 
-### Schedule via Cron (Daily at 8 AM)
+### Schedule via Cron (Daily at 10 AM)
 ```bash
 crontab -e
 # Add:
-0 8 * * * cd /path/to/linkedin-job-agent && /usr/bin/python scripts/run_daily.py >> logs/daily.log 2>&1
+0 10 * * * cd /path/to/linkedin-job-agent && /usr/bin/python scripts/run_daily.py >> logs/daily.log 2>&1
 ```
 
 ---
